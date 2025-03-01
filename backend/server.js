@@ -26,7 +26,11 @@ app.post('/chat', async (req, res) => {
         console.log("Full API Response:", JSON.stringify(response, null, 2));
 
         if (response.response && response.response.candidates.length > 0) {
-            const botReply = response.response.candidates[0].content.parts[0].text;
+            let botReply = response.response.candidates[0].content.parts[0].text;
+
+            // Remove Markdown formatting (**bold**, *italic*)
+            botReply = botReply.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+
             res.json({ response: botReply });
         } else {
             res.status(500).json({ error: 'Failed to generate response from Gemini API' });
@@ -37,5 +41,6 @@ app.post('/chat', async (req, res) => {
         res.status(500).json({ error: error.message || 'Failed to fetch response' });
     }
 });
+
 
 app.listen(5000, () => console.log('Server running on port 5000'));
