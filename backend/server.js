@@ -44,7 +44,7 @@ app.post("/chat", async (req, res) => {
     - **Problem Summary**: Briefly summarize the problem in 1-2 sentences.
     - **Key Concepts**: List the relevant concepts or algorithms in bullet points.
     - **Hints**: Provide hints as a numbered list, encouraging critical thinking.
-    - **Related Problems**: If applicable, suggest similar problems for further practice.
+   
 
     Always encourage the user to explore the solution themselves.
         
