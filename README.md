@@ -64,6 +64,12 @@ Ensure you have:
    npm start
    ```
 
+## 🏗️ Backend Implementation
+- Built using **Node.js** and **Express.js** for handling API requests.
+- Integrates **Google Gemini API** for generating AI responses.
+- Processes user queries and sends structured prompts to Gemini.
+- Ensures **error handling** for API failures or invalid inputs.
+
 ## 🌐 Frontend Implementation
 - Developed using **React.js** for an interactive user experience.
 - Uses **useState** to manage chat state.
