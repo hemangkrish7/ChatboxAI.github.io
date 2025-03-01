@@ -84,6 +84,13 @@ Ensure you have:
 4. The AI will provide **hints and key concepts** instead of direct solutions.
 5. **Explore related problems** suggested by the chatbot for further practice.
 
+## 📩 Contact
+For any queries, feel free to reach out:
+
+👤 **Hemang Krish**  
+📧 **hemangkrish_co21a4-24@dtu.ac.in**  
+   
+
 ## 🔗 Additional Features
 - **⚠️ Error Handling**: Displays messages when the backend is unreachable.
 - **🎨 Responsive UI**: Styled with CSS for a clean, modern look.
