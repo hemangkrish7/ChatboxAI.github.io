@@ -12,35 +12,53 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 app.post('/chat', async (req, res) => {
     const { problemLink, doubt } = req.body;
 
+    // Validate input
     if (!problemLink || !doubt) {
         return res.status(400).json({ error: 'Problem link and doubt are required' });
     }
 
+    // Validate LeetCode problem link
+    if (!problemLink.startsWith('https://leetcode.com/problems/') && !problemLink.startsWith('https://www.leetcode.com/problems/')) {
+        return res.status(400).json({ error: 'Invalid LeetCode problem link.' });
+    }
+
     console.log("Received request:", { problemLink, doubt });
 
-    const prompt = `User's DSA problem: ${problemLink}\nDoubt: ${doubt}\nGive hints without providing a direct solution.`;
+    // AI Prompt
+    const prompt = `
+    The user has provided a DSA problem: ${problemLink}.
+    They have the following doubt: "${doubt}".
+
+    Your task is to:
+    1. Provide a brief summary of the problem (avoid copying the exact problem statement).
+    2. Identify the key concepts or algorithms required (e.g., dynamic programming, graph traversal, etc.).
+    3. Offer hints or guiding questions to help the user think critically.
+    4. Provide examples of similar, simpler problems if applicable.
+    5. Avoid giving the direct solution.
+
+    Always encourage the user to explore the solution themselves.
+    `;
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
         const response = await model.generateContent(prompt);
+
         console.log("Full API Response:", JSON.stringify(response, null, 2));
 
+        // Extract and send the response
         if (response.response && response.response.candidates.length > 0) {
-            let botReply = response.response.candidates[0].content.parts[0].text;
-
-            // Remove Markdown formatting (**bold**, *italic*)
-            botReply = botReply.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
-
+            const botReply = response.response.candidates[0].content.parts[0].text;
             res.json({ response: botReply });
         } else {
-            res.status(500).json({ error: 'Failed to generate response from Gemini API' });
+            res.status(500).json({ error: 'Failed to generate a response. Please try again later.' });
         }
 
     } catch (error) {
         console.error("Error processing request:", error);
-        res.status(500).json({ error: error.message || 'Failed to fetch response' });
+        res.status(500).json({
+            error: 'Failed to process your request. Please try again later.',
+        });
     }
 });
-
 
 app.listen(5000, () => console.log('Server running on port 5000'));
