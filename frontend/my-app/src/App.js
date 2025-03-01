@@ -80,7 +80,7 @@ function App() {
                 ))}
                 {isLoading && (
                     <div style={styles.thinkingMessage}>
-                        <strong>Bot:</strong> Bot is thinking...
+                        <strong>Bot:</strong> 🤖Bot is thinking...
                     </div>
                 )}
             </div>
