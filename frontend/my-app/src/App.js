@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
 function App() {
+    // State to store problem link, user doubt, chat messages, and loading status
     const [problemLink, setProblemLink] = useState('');
     const [doubt, setDoubt] = useState('');
     const [messages, setMessages] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Shows "thinking" message when bot is generating a response
 
     const sendMessage = async () => {
-        if (!problemLink || !doubt) return;
+        if (!problemLink || !doubt) return; // Prevents empty messages from being sent
 
+        // Add user message to chat
         const userMessage = { sender: 'user', text: doubt };
         setMessages((prevMessages) => [...prevMessages, userMessage]);
 
@@ -16,16 +18,18 @@ function App() {
         console.log("Sending request to backend:", { problemLink, doubt });
 
         try {
+            // Send request to backend
             const response = await fetch('http://localhost:5000/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ problemLink, doubt }),
             });
 
+            // Extract AI response and update chat
             const data = await response.json();
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { sender: 'bot', text: data.response },
+                { sender: 'bot', text: data.response }, // Add bot's reply to chat
             ]);
         } catch (error) {
             console.error("Error sending message:", error);
@@ -42,6 +46,7 @@ function App() {
         <div style={styles.app}>
             <h2 style={styles.title}>DSA Chat Assistant</h2>
             <div style={styles.inputContainer}>
+                {/* Input for problem link */}
                 <input
                     type="text"
                     placeholder="LeetCode Problem Link"
@@ -49,15 +54,18 @@ function App() {
                     onChange={(e) => setProblemLink(e.target.value)}
                     style={styles.input}
                 />
+                {/* Textarea for user's doubt */}
                 <textarea
                     placeholder="Type your doubt here..."
                     value={doubt}
                     onChange={(e) => setDoubt(e.target.value)}
                     style={styles.textarea}
                 />
+                {/* Send button */}
                 <button onClick={sendMessage} style={styles.button}>Send</button>
             </div>
             <div style={styles.chatContainer}>
+                {/* Display chat messages */}
                 {messages.map((msg, index) => (
                     <div
                         key={index}
@@ -78,6 +86,7 @@ function App() {
                         )}
                     </div>
                 ))}
+                {/* Show "Bot is thinking..." when waiting for response */}
                 {isLoading && (
                     <div style={styles.thinkingMessage}>
                         <strong>Bot:</strong> 🤖Bot is thinking...

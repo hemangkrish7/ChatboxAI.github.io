@@ -1,25 +1,25 @@
 const express = require("express");
 const cors = require("cors");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require("dotenv").config();
+require("dotenv").config(); // Load environment variables from a .env file
 
 const app = express();
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); // Middleware to parse JSON request bodies
+app.use(cors()); // Enable CORS to allow requests from different origins
 
+// Initialize the AI model using the API key stored in environment variables
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Endpoint to handle user doubts related to LeetCode problems
 app.post("/chat", async (req, res) => {
   const { problemLink, doubt } = req.body;
 
-  // Validate input
+  // Validate if both problemLink and doubt are provided in the request
   if (!problemLink || !doubt) {
-    return res
-      .status(400)
-      .json({ error: "Problem link and doubt are required" });
+    return res.status(400).json({ error: "Problem link and doubt are required" });
   }
 
-  // Validate LeetCode problem link
+  // Ensure the provided problem link is a valid LeetCode URL
   if (
     !problemLink.startsWith("https://leetcode.com/problems/") &&
     !problemLink.startsWith("https://www.leetcode.com/problems/")
@@ -29,66 +29,46 @@ app.post("/chat", async (req, res) => {
 
   console.log("Received request:", { problemLink, doubt });
 
-  // AI Prompt
+  // Create a prompt that will guide the AI to generate a helpful response
   const prompt = `
     The user has provided a DSA problem: ${problemLink}.
     They have the following doubt: "${doubt}".
+    
     Your task is to:
-
     1. Identify the key concepts or algorithms required (e.g., dynamic programming, graph traversal, etc.).
     2. Offer hints or guiding questions to help the user think critically.
-
     3. Avoid giving the direct solution.
 
     Always format your response as follows:
     - **Problem Summary**: Briefly summarize the problem in 1-2 sentences.
     - **Key Concepts**: List the relevant concepts or algorithms in bullet points.
     - **Hints**: Provide hints as a numbered list, encouraging critical thinking.
-   
 
     Always encourage the user to explore the solution themselves.
-        
-    `;
-  /*const prompt = `
-The user has provided a DSA problem: ${problemLink}.
-They have the following doubt: "${doubt}".
-
-Your task is to:
-1. Provide a brief summary of the problem (avoid copying the exact problem statement).
-2. Identify the key concepts or algorithms required (e.g., dynamic programming, graph traversal, etc.).
-3. Offer hints or guiding questions to help the user think critically.
-4. Provide examples of similar, simpler problems if applicable.
-5. Avoid giving the direct solution.
-
-Always format your response as follows:
-- **Problem Summary**: Briefly summarize the problem in 1-2 sentences.
-- **Key Concepts**: List the relevant concepts or algorithms in bullet points.
-- **Hints**: Provide hints as a numbered list, encouraging critical thinking.
-- **Related Problems**: If applicable, suggest similar problems for further practice.
-
-Always encourage the user to explore the solution themselves.
-`;*/
+  `;
 
   try {
+    // Get the generative AI model
     const model = genAI.getGenerativeModel({
       model: "models/gemini-2.0-flash",
     });
+
+    // Generate content based on the provided prompt
     const response = await model.generateContent(prompt);
 
     console.log("Full API Response:", JSON.stringify(response, null, 2));
 
-    // Extract and send the response
+    // Extract and format the AI response for readability
     if (response.response && response.response.candidates.length > 0) {
       const botReply = response.response.candidates[0].content.parts[0].text
-        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-        .replace(/\n/g, "<br>");
+        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") // Convert **bold** to <b>bold</b>
+        .replace(/\n/g, "<br>"); // Convert newlines to HTML line breaks for readability
+
       res.json({ response: botReply });
     } else {
-      res
-        .status(500)
-        .json({
-          error: "Failed to generate a response. Please try again later.",
-        });
+      res.status(500).json({
+        error: "Failed to generate a response. Please try again later.",
+      });
     }
   } catch (error) {
     console.error("Error processing request:", error);
@@ -98,4 +78,5 @@ Always encourage the user to explore the solution themselves.
   }
 });
 
+// Start the server on port 5000
 app.listen(5000, () => console.log("Server running on port 5000"));
