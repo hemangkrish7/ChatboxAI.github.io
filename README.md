@@ -1,19 +1,19 @@
-# Chat Assistant Application
+# DSA Chat Assistant 
 
-## Overview
+## 📌 Overview
 This project is a **GPT-based Teaching Assistant** designed to help users understand **Data Structures and Algorithms (DSA)** problems. Users can input a **LeetCode problem link** along with their **doubt**, and the chatbot provides **guidance, hints, and insights** without giving direct answers.
 
-## Objective
+## 🎯 Objective
 - Develop a **user-friendly chat interface**.
 - Integrate **GPT/Gemini AI** to assist users in understanding DSA problems.
 - Provide **structured hints, guiding questions, and related examples**.
 
-## Requirements
+## 📜 Requirements
 ### 1️⃣ **User Interface**
 - A simple and intuitive chat interface where users can:
-  - Submit a **LeetCode problem URL**.
-  - Enter **doubts or questions** about the problem.
-  - Receive **AI-generated hints and insights**.
+  - ✅ Submit a **LeetCode problem URL**.
+  - ✅ Enter **doubts or questions** about the problem.
+  - ✅ Receive **AI-generated hints and insights**.
 - Basic chat functionalities such as sending messages and displaying responses.
 
 ### 2️⃣ **Integration with GPT/Gemini AI**
@@ -29,22 +29,22 @@ This project is a **GPT-based Teaching Assistant** designed to help users unders
 ```plaintext
 **Problem Summary**: A brief explanation of the problem.
 **Key Concepts**:
-- List of key algorithms or techniques.
+- 🔹 List of key algorithms or techniques.
 **Hints**:
-1. Thought-provoking hint 1.
-2. Thought-provoking hint 2.
+1. 🤔 Thought-provoking hint 1.
+2. 💡 Thought-provoking hint 2.
 **Related Problems**:
-- Similar problem for further practice.
+- 🔗 Similar problem for further practice.
 ```
 
-## Setup Instructions
-### Prerequisites
+## 🔧 Setup Instructions
+### 🛠️ **Prerequisites**
 Ensure you have:
 - **Node.js** installed
 - **NPM** package manager
 - **Google Gemini API Key**
 
-### Installation Steps
+### 📥 **Installation Steps**
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/your-username/dsa-chat-assistant.git
@@ -64,23 +64,23 @@ Ensure you have:
    npm start
    ```
 
-## Frontend Implementation
+## 🌐 Frontend Implementation
 - Developed using **React.js** for an interactive user experience.
 - Uses **useState** to manage chat state.
 - Fetches responses from the backend using **Fetch API**.
 - Displays messages in a structured chat format.
 - Includes **loading indicators** while waiting for AI responses.
 
-## How to Use
+## 🔹 How to Use
 1. **Enter a LeetCode problem link** in the input field.
 2. **Type your doubt** related to the problem.
 3. **Click 'Send'** to process the query.
 4. The AI will provide **hints and key concepts** instead of direct solutions.
 5. **Explore related problems** suggested by the chatbot for further practice.
 
-## Additional Features
-- **Error Handling**: Displays messages when the backend is unreachable.
-- **Responsive UI**: Styled with CSS for a clean, modern look.
-- **Future Enhancements**:
+## 🔗 Additional Features
+- **⚠️ Error Handling**: Displays messages when the backend is unreachable.
+- **🎨 Responsive UI**: Styled with CSS for a clean, modern look.
+- **🚀 Future Enhancements**:
   - Add **dark mode** support.
   - Improve AI response formatting for clarity.
