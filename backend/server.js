@@ -39,13 +39,15 @@ app.post("/chat", async (req, res) => {
     2. Offer hints or guiding questions to help the user think critically.
     3. Avoid giving the direct solution.
 
-    Always format your response as follows:
-    - **Problem Summary**: Briefly summarize the problem in 1-2 sentences.
-    - **Key Concepts**: List the relevant concepts or algorithms in bullet points.
-    - **Hints**: Provide hints as a numbered list, encouraging critical thinking.
+    
 
     Always encourage the user to explore the solution themselves.
   `;
+  // Additional prompts that can be added according to the demand of the set 
+  /*Always format your response as follows:
+    - **Problem Summary**: Briefly summarize the problem in 1-2 sentences.
+    - **Key Concepts**: List the relevant concepts or algorithms in bullet points.
+    - **Hints**: Provide hints as a numbered list, encouraging critical thinking.*/
 
   try {
     // Get the generative AI model
