@@ -47,22 +47,55 @@ Ensure you have:
 ### 📥 **Installation Steps**
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/your-username/dsa-chat-assistant.git
-   cd dsa-chat-assistant
+   git clone https://github.com/hemangkrish7/ChatboxAI.github.io.git
+   cd ChatboxAI.github.io
    ```
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-3. **Set up environment variables:**
-   - Create a `.env` file and add:
-     ```sh
-     GEMINI_API_KEY=your_api_key_here
-     ```
-4. **Start the application:**
-   ```sh
-   npm start
-   ```
+Backend Setup:
+
+Navigate to the backend folder:
+sh
+Copy
+Edit
+cd backend
+Install backend dependencies:
+sh
+Copy
+Edit
+npm install
+Create a .env file and add your Gemini API Key:
+sh
+Copy
+Edit
+GEMINI_API_KEY=your_api_key_here
+Start the backend server:
+sh
+Copy
+Edit
+node server.js
+Frontend Setup:
+
+Navigate to the my_react_app folder:
+sh
+Copy
+Edit
+cd my_react_app
+Install frontend dependencies:
+sh
+Copy
+Edit
+npm install
+Start the React frontend server:
+sh
+Copy
+Edit
+npm start
+Proxy Configuration (Optional but recommended):
+
+In your React app’s package.json, add the following proxy configuration to avoid needing to manually specify the backend URL:
+json
+Copy
+Edit
+"proxy": "http://localhost:5000"
 
 ## 🏗️ Backend Implementation
 - Built using **Node.js** and **Express.js** for handling API requests.
