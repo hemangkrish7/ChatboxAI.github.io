@@ -89,7 +89,7 @@ To avoid CORS issues, add this to `package.json` in your React app:
 ```json
 {
   "problemUrl": "https://leetcode.com/problems/two-sum",
-  "question": "How to approach this problem?"
+  "doubt": "How to approach this problem?"
 }
 ```
 **Response:**
