@@ -1,6 +1,5 @@
 # DSA Chat Assistant
 
- 
 *A GPT-based assistant for understanding DSA problems through guided hints and insights.*
 
 ## 📌 Overview
@@ -39,7 +38,7 @@ cd ChatboxAI.github.io
 cd backend
 npm install
 ```
-Create a `.env` file and add your API key:
+Create a `.env` file and add your API key (You can use the key already provided in `.env`):
 ```sh
 GEMINI_API_KEY=your_api_key_here
 ```
@@ -50,7 +49,8 @@ node server.js
 
 #### 🌐 Frontend Setup
 ```sh
-cd my_react_app
+cd frontend
+cd my-app
 npm install
 npm start
 ```
@@ -73,18 +73,15 @@ To avoid CORS issues, add this to `package.json` in your React app:
 📦 DSA-Chat-Assistant
 ├── backend  # Node.js API
 │   ├── server.js
-│   ├── routes/
-│   ├── controllers/
 │   ├── .env
-├── my_react_app  # React Frontend
-│   ├── src/
-│   ├── components/
-│   ├── App.js
+├── frontend  # React Frontend
+│   ├── my-app
+│   │   ├── src/
+│   │   ├── components/
+│   │   ├── App.js
 ├── README.md
 ```
 
-## 🎨 Screenshots
-![Chat Interface](https://your-image-url.com/chat-interface.png)
 
 ## 🤖 API Structure
 ### `POST /api/chat`
@@ -116,7 +113,6 @@ To avoid CORS issues, add this to `package.json` in your React app:
 ## 📩 Contact
 👤 **Hemang Krish**  
 📧 [hemangkrish_co21a4-24@dtu.ac.in](mailto:hemangkrish_co21a4-24@dtu.ac.in)  
-
 
 
 ---
