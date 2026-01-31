@@ -50,35 +50,59 @@ app.post("/chat", async (req, res) => {
     - **Hints**: Provide hints as a numbered list, encouraging critical thinking.*/
 
   try {
-    // Get the generative AI model
-    const model = genAI.getGenerativeModel({
-      model: "models/gemini-2.0-flash",
-    });
+  const model = genAI.getGenerativeModel({
+    model: "models/gemini-3-flash-preview",
+  });
 
-    // Generate content based on the provided prompt
-    const response = await model.generateContent(prompt);
+  const response = await model.generateContent(prompt);
 
-    console.log("Full API Response:", JSON.stringify(response, null, 2));
+  console.log("Full API Response:", JSON.stringify(response, null, 2));
 
-    // Extract and format the AI response for readability
-    if (response.response && response.response.candidates.length > 0) {
-      const botReply = response.response.candidates[0].content.parts[0].text
-        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") // Convert **bold** to <b>bold</b>
-        .replace(/\n/g, "<br>"); // Convert newlines to HTML line breaks for readability
+  const text =
+    response?.response?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      res.json({ response: botReply });
-    } else {
-      res.status(500).json({
-        error: "Failed to generate a response. Please try again later.",
-      });
-    }
-  } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).json({
-      error: "Failed to process your request. Please try again later.",
+  if (!text) {
+    return res.status(500).json({
+      error: "Failed to generate a response.",
     });
   }
-});
+
+  const cleanedText = text
+  // 🔥 remove LaTeX math like $O(n)$, $O(n^2)$
+  .replace(/\$[^$]*\$/g, "")
+
+  // remove escaped LaTeX
+  .replace(/\\\(|\\\)/g, "")
+  .replace(/\\\[|\\\]/g, "")
+
+  // clean extra spaces
+  .replace(/\s{2,}/g, " ");
+
+const botReply = cleanedText
+  .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+  .replace(/^#### (.*$)/gim, "<h4>$1</h4>")
+  .replace(/^\* (.*$)/gim, "<li>$1</li>")
+  .replace(/\n<li>/g, "<ul><li>")
+  .replace(/(<\/li>)(?!<li>)/g, "$1</ul>")
+  .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+  .replace(/\n/g, "<br>");
+
+
+} catch (error) {
+  console.error("Error processing request:", error);
+  res.status(500).json({
+    error: "Failed to process your request. Please try again later.",
+  });
+  if (error.status === 429) {
+  return res.status(429).json({
+    response: "⚠️ Too many requests. Please wait a minute and try again.",
+  });
+}
+}
+}); 
+
+
 
 // Start the server on port 5000
-app.listen(5000, () => console.log("Server running on port 5000"));
+app.listen(5000, () => console.log("Server running on port 5000")); 
+

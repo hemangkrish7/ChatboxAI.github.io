@@ -1,213 +1,186 @@
 import { useState, useEffect, useRef } from "react";
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
 
 function App() {
-    const [problemLink, setProblemLink] = useState("");
-    const [doubt, setDoubt] = useState("");
-    const [messages, setMessages] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const chatEndRef = useRef(null);
+  const [problemLink, setProblemLink] = useState("");
+  const [doubt, setDoubt] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
-    const sendMessage = async () => {
-        if (!problemLink || !doubt) return;
+  const sendMessage = async () => {
+    if (!problemLink || !doubt || isLoading) return;
 
-        const userMessage = { sender: "user", text: doubt };
-        setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setMessages((prev) => [...prev, { sender: "user", text: doubt }]);
+    setIsLoading(true);
+    setDoubt("");
 
-        setIsLoading(true);
-        setDoubt("");
+    try {
+      const response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ problemLink, doubt }),
+      });
 
-        try {
-            const response = await fetch("http://localhost:5000/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ problemLink, doubt }),
-            });
+      const data = await response.json();
 
-            const data = await response.json();
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: data.response },
-            ]);
-        } catch (error) {
-            console.error("Error sending message:", error);
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: "Something went wrong. Please try again later." },
-            ]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: data.response || "No response received." },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Something went wrong." },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    return (
-        <div style={styles.app}>
-            {/* Particles Background */}
-            <Particles
-                options={{
-                    background: { color: "#0d47a1" }, // Dark blue background
-                    particles: {
-                        number: { value: 100 }, // Number of particles
-                        shape: { type: "circle" },
-                        opacity: { value: 0.5 },
-                        size: { value: 3 },
-                        move: {
-                            enable: true,
-                            speed: 2,
-                            direction: "none",
-                            random: true,
-                        },
-                    },
-                }}
-                init={async (main) => await loadSlim(main)}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-            />
+  return (
+    <div style={styles.app}>
+      <div style={styles.chatBox}>
+        <h1 style={styles.title}>
+          <span style={{ color: "#4fc3f7" }}>DSA</span>{" "}
+          <span style={{ color: "#fff" }}>Chat</span>{" "}
+          <span style={{ color: "#81c784" }}>Assistant</span>
+        </h1>
 
-            <div style={styles.chatBox}>
-                <h2 style={styles.title}>DSA Chat Assistant</h2>
-                <div style={styles.inputContainer}>
-                    <input
-                        type="text"
-                        placeholder="LeetCode Problem Link"
-                        value={problemLink}
-                        onChange={(e) => setProblemLink(e.target.value)}
-                        style={styles.input}
-                    />
-                    <textarea
-                        placeholder="Type your doubt here..."
-                        value={doubt}
-                        onChange={(e) => setDoubt(e.target.value)}
-                        style={styles.textarea}
-                    />
-                    <button onClick={sendMessage} style={styles.button}>Send</button>
-                </div>
-                <div style={styles.chatContainer}>
-                    {messages.map((msg, index) => (
-                        <div
-                            key={index}
-                            style={{
-                                ...styles.message,
-                                backgroundColor: msg.sender === "bot" ? "#F0F8FF" : "#D1E7FF",
-                                alignSelf: msg.sender === "bot" ? "flex-start" : "flex-end",
-                            }}
-                        >
-                            <strong style={styles.sender}>{msg.sender}:</strong>
-                            {msg.sender === "bot" ? (
-                                <div
-                                    style={styles.messageText}
-                                    dangerouslySetInnerHTML={{ __html: msg.text }}
-                                />
-                            ) : (
-                                <pre style={styles.messageText}>{msg.text}</pre>
-                            )}
-                        </div>
-                    ))}
-                    {isLoading && (
-                        <div style={styles.thinkingMessage}>
-                            <strong>Bot:</strong> 🤖 Bot is thinking...
-                        </div>
-                    )}
-                    <div ref={chatEndRef} />
-                </div>
-            </div>
-        </div>
-    );
+        <input
+          style={styles.input}
+          placeholder="LeetCode Problem Link"
+          value={problemLink}
+          onChange={(e) => setProblemLink(e.target.value)}
+        />
+
+        <textarea
+          style={styles.textarea}
+          placeholder="Type your doubt here..."
+          value={doubt}
+          onChange={(e) => setDoubt(e.target.value)}
+        />
+
+        <button style={styles.button} onClick={sendMessage}>
+          Send
+        </button>
+
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            style={{
+              ...styles.message,
+              alignSelf: msg.sender === "bot" ? "flex-start" : "flex-end",
+              background:
+                msg.sender === "bot"
+                  ? "rgba(255,255,255,0.92)"
+                  : "linear-gradient(135deg, #42a5f5, #478ed1)",
+              color: msg.sender === "bot" ? "#222" : "#fff",
+            }}
+          >
+            <strong>{msg.sender}:</strong>
+            {msg.sender === "bot" ? (
+              <div
+                dangerouslySetInnerHTML={{ __html: msg.text }}
+                style={{ lineHeight: "1.7", fontSize: "14px" }}
+              />
+            ) : (
+              <pre style={{ margin: 0 }}>{msg.text}</pre>
+            )}
+          </div>
+        ))}
+
+        {isLoading && (
+          <div style={styles.thinking}>🤖 Bot is thinking…</div>
+        )}
+
+        <div ref={chatEndRef} />
+      </div>
+    </div>
+  );
 }
 
 const styles = {
-    app: {
-        fontFamily: "Arial, sans-serif",
-        height: "100vh",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative",
-        overflow: "hidden",
-    },
-    chatBox: {
-        position: "relative",
-        zIndex: 10, // Ensure the chat box is above the particles
-        padding: "40px",
-        maxWidth: "800px",
-        width: "90%",
-        borderRadius: "10px",
-        background: "rgba(255, 255, 255, 0.9)",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    title: {
-        textAlign: "center",
-        color: "#007BFF",
-        marginBottom: "20px",
-    },
-    inputContainer: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-    },
-    input: {
-        padding: "10px",
-        borderRadius: "5px",
-        border: "1px solid #ddd",
-        fontSize: "16px",
-    },
-    textarea: {
-        padding: "10px",
-        borderRadius: "5px",
-        border: "1px solid #ddd",
-        fontSize: "16px",
-        height: "80px",
-        resize: "none",
-    },
-    button: {
-        padding: "10px 20px",
-        border: "none",
-        borderRadius: "5px",
-        backgroundColor: "#007BFF",
-        color: "white",
-        fontSize: "16px",
-        cursor: "pointer",
-        transition: "background-color 0.3s ease",
-    },
-    chatContainer: {
-        marginTop: "20px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-    },
-    message: {
-        padding: "10px 15px",
-        borderRadius: "10px",
-        maxWidth: "70%",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-    },
-    sender: {
-        fontWeight: "bold",
-        display: "block",
-        marginBottom: "5px",
-        color: "#333",
-    },
-    messageText: {
-        whiteSpace: "pre-wrap",
-        wordWrap: "break-word",
-        fontSize: "14px",
-        color: "#555",
-    },
-    thinkingMessage: {
-        alignSelf: "flex-start",
-        backgroundColor: "#FFF3CD",
-        color: "#856404",
-        padding: "10px 15px",
-        borderRadius: "10px",
-        maxWidth: "70%",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-        fontStyle: "italic",
-    },
+  app: {
+    height: "100vh",
+    width: "100vw",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#0b1d2a",
+    overflow: "hidden",
+    fontFamily: "Inter, system-ui",
+  },
+
+  chatBox: {
+    height: "90vh",
+    maxHeight: "720px",
+    width: "92%",
+    maxWidth: "850px",
+    padding: "32px",
+    borderRadius: "18px",
+    background: "rgba(255,255,255,0.12)",
+    backdropFilter: "blur(16px)",
+    border: "1px solid rgba(255,255,255,0.25)",
+    boxShadow: "0 25px 50px rgba(0,0,0,0.5)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+    overflowY: "auto", // ✅ ONLY scroll
+  },
+
+  title: {
+    textAlign: "center",
+    fontSize: "2.6rem",
+    fontWeight: "800",
+    marginBottom: "10px",
+  },
+
+  input: {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid rgba(255,255,255,0.3)",
+    background: "rgba(0,0,0,0.45)",
+    color: "#fff",
+  },
+
+  textarea: {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid rgba(255,255,255,0.3)",
+    background: "rgba(0,0,0,0.45)",
+    color: "#fff",
+    height: "90px",
+    resize: "none",
+  },
+
+  button: {
+    padding: "12px",
+    borderRadius: "10px",
+    border: "none",
+    fontWeight: "600",
+    cursor: "pointer",
+    color: "#fff",
+    background: "linear-gradient(135deg, #42a5f5, #478ed1)",
+  },
+
+  message: {
+    padding: "14px 16px",
+    borderRadius: "14px",
+    maxWidth: "75%",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
+  },
+
+  thinking: {
+    background: "#fff3cd",
+    padding: "10px",
+    borderRadius: "10px",
+    fontStyle: "italic",
+    width: "fit-content",
+  },
 };
 
 export default App;
